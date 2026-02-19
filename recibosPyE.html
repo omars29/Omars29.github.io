@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Visor de PDFs</title>
+    <title>Visor de PDFs y Registro</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,7 +11,7 @@
         }
         .container {
             margin: 20px auto;
-            width: 80%;
+            width: 85%;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -39,6 +39,19 @@
             margin: 5px;
             width: 200px;
         }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -46,21 +59,38 @@
 <div class="container">
     <h2>Visor de Documentos PDF</h2>
 
-    <!-- Botones para abrir PDFs -->
-    <button onclick="abrirPDF('Datos del recibo de luz 1.pdf')">Abrir PDF 1</button>
-    <button onclick="abrirPDF('Datos del recibo de luz 2.pdf')">Abrir PDF 2</button>
-    <button onclick="abrirPDF('Datos del recibo de luz 3.pdf')">Abrir PDF 3</button>
+    <button onclick="abrirPDF('pdf1.pdf')">Abrir PDF 1</button>
+    <button onclick="abrirPDF('pdf2.pdf')">Abrir PDF 2</button>
+    <button onclick="abrirPDF('pdf3.pdf')">Abrir PDF 3</button>
 
     <iframe id="visorPDF"></iframe>
 </div>
 
 <div class="container">
-    <h2>Registro de Datos</h2>
-    <input type="text" id="nombre" placeholder="Nombre">
-    <input type="email" id="correo" placeholder="Correo">
-    <br>
+    <h2>Registro de Servicio</h2>
+
+    <input type="text" id="numeroServicio" placeholder="Número de servicio"><br>
+    <input type="text" id="periodo" placeholder="Periodo"><br>
+    <input type="number" id="lecturaAnterior" placeholder="Lectura anterior"><br>
+    <input type="number" id="lecturaActual" placeholder="Lectura actual"><br>
+    <input type="number" id="totalPagar" placeholder="Total a pagar"><br>
+
     <button onclick="guardarDatos()">Guardar Datos</button>
+
     <p id="mensaje"></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>No. Servicio</th>
+                <th>Periodo</th>
+                <th>Lectura Anterior</th>
+                <th>Lectura Actual</th>
+                <th>Total a Pagar</th>
+            </tr>
+        </thead>
+        <tbody id="tablaDatos"></tbody>
+    </table>
 </div>
 
 <script>
@@ -69,23 +99,65 @@
     }
 
     function guardarDatos() {
-        const nombre = document.getElementById("nombre").value;
-        const correo = document.getElementById("correo").value;
 
-        if(nombre === "" || correo === "") {
-            document.getElementById("mensaje").innerText = "Por favor completa todos los campos.";
+        const numeroServicio = document.getElementById("numeroServicio").value;
+        const periodo = document.getElementById("periodo").value;
+        const lecturaAnterior = document.getElementById("lecturaAnterior").value;
+        const lecturaActual = document.getElementById("lecturaActual").value;
+        const totalPagar = document.getElementById("totalPagar").value;
+
+        if (!numeroServicio || !periodo || !lecturaAnterior || !lecturaActual || !totalPagar) {
+            document.getElementById("mensaje").innerText = "Completa todos los campos.";
             return;
         }
 
-        const datos = {
-            nombre: nombre,
-            correo: correo
+        const nuevoRegistro = {
+            numeroServicio,
+            periodo,
+            lecturaAnterior,
+            lecturaActual,
+            totalPagar
         };
 
-        localStorage.setItem("registroUsuario", JSON.stringify(datos));
+        let registros = JSON.parse(localStorage.getItem("registros")) || [];
+        registros.push(nuevoRegistro);
+        localStorage.setItem("registros", JSON.stringify(registros));
 
-        document.getElementById("mensaje").innerText = "Datos guardados correctamente.";
+        document.getElementById("mensaje").innerText = "Registro guardado correctamente.";
+
+        mostrarDatos();
+        limpiarCampos();
     }
+
+    function mostrarDatos() {
+        const tabla = document.getElementById("tablaDatos");
+        tabla.innerHTML = "";
+
+        let registros = JSON.parse(localStorage.getItem("registros")) || [];
+
+        registros.forEach(registro => {
+            tabla.innerHTML += `
+                <tr>
+                    <td>${registro.numeroServicio}</td>
+                    <td>${registro.periodo}</td>
+                    <td>${registro.lecturaAnterior}</td>
+                    <td>${registro.lecturaActual}</td>
+                    <td>$${registro.totalPagar}</td>
+                </tr>
+            `;
+        });
+    }
+
+    function limpiarCampos() {
+        document.getElementById("numeroServicio").value = "";
+        document.getElementById("periodo").value = "";
+        document.getElementById("lecturaAnterior").value = "";
+        document.getElementById("lecturaActual").value = "";
+        document.getElementById("totalPagar").value = "";
+    }
+
+    // Cargar datos al iniciar
+    mostrarDatos();
 </script>
 
 </body>
