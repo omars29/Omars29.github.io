@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Visor de PDFs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            margin: 20px auto;
+            width: 80%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        iframe {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Visor de Documentos PDF</h2>
+
+    <!-- Botones para abrir PDFs -->
+    <button onclick="abrirPDF('pdf1.pdf')">Abrir PDF 1</button>
+    <button onclick="abrirPDF('pdf2.pdf')">Abrir PDF 2</button>
+    <button onclick="abrirPDF('pdf3.pdf')">Abrir PDF 3</button>
+
+    <iframe id="visorPDF"></iframe>
+</div>
+
+<div class="container">
+    <h2>Registro de Datos</h2>
+    <input type="text" id="nombre" placeholder="Nombre">
+    <input type="email" id="correo" placeholder="Correo">
+    <br>
+    <button onclick="guardarDatos()">Guardar Datos</button>
+    <p id="mensaje"></p>
+</div>
+
+<script>
+    function abrirPDF(ruta) {
+        document.getElementById("visorPDF").src = ruta;
+    }
+
+    function guardarDatos() {
+        const nombre = document.getElementById("nombre").value;
+        const correo = document.getElementById("correo").value;
+
+        if(nombre === "" || correo === "") {
+            document.getElementById("mensaje").innerText = "Por favor completa todos los campos.";
+            return;
+        }
+
+        const datos = {
+            nombre: nombre,
+            correo: correo
+        };
+
+        localStorage.setItem("registroUsuario", JSON.stringify(datos));
+
+        document.getElementById("mensaje").innerText = "Datos guardados correctamente.";
+    }
+</script>
+
+</body>
+</html>
